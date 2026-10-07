@@ -22,6 +22,11 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
+	err := utils.ReadEnv()
+	if err != nil {
+		log.Printf("Failed to read .env: %v", err)
+	}
+
 	ctx := context.Background()
 	queries, pool, dbConn, err := db.Connect(ctx)
 	if err != nil {
@@ -41,5 +46,6 @@ func main() {
 	kelasHandler := kelas.New(queries)
 	kelasHandler.Register(e)
 
-	err = e.Start(utils.GetEnv())
+	port := utils.GetPort()
+	err = e.Start(port)
 }
