@@ -1,0 +1,68 @@
+definitions:
+  db.Pengguna:
+    properties:
+      dibuat:
+        $ref: '#/definitions/pgtype.Timestamp'
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      phone:
+        type: string
+      profile_picture:
+        type: string
+      username:
+        type: string
+    type: object
+  pgtype.InfinityModifier:
+    enum:
+    - 1
+    - 0
+    - -1
+    format: int32
+    type: integer
+    x-enum-varnames:
+    - Infinity
+    - Finite
+    - NegativeInfinity
+  pgtype.Timestamp:
+    properties:
+      infinityModifier:
+        $ref: '#/definitions/pgtype.InfinityModifier'
+      time:
+        description: Time zone will be ignored when encoding to PostgreSQL.
+        type: string
+      valid:
+        type: boolean
+    type: object
+info:
+  contact:
+    email: mbkmpath@gmail.com
+    name: MBKM PATH
+  description: Personal Adaptive Teaching Hub
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: PATH API
+  version: "1.0"
+paths:
+  /pengguna:
+    get:
+      description: Mendapatkan semua data pengguna
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/db.Pengguna'
+        "500":
+          description: gagal mendapatkan data pengguna
+          schema:
+            type: string
+      summary: List Pengguna
+      tags:
+      - pengguna
+swagger: "2.0"

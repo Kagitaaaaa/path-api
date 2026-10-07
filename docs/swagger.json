@@ -1,0 +1,101 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Personal Adaptive Teaching Hub",
+        "title": "PATH API",
+        "contact": {
+            "name": "MBKM PATH",
+            "email": "mbkmpath@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/pengguna": {
+            "get": {
+                "description": "Mendapatkan semua data pengguna",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengguna"
+                ],
+                "summary": "List Pengguna",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/db.Pengguna"
+                        }
+                    },
+                    "500": {
+                        "description": "gagal mendapatkan data pengguna",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "db.Pengguna": {
+            "type": "object",
+            "properties": {
+                "dibuat": {
+                    "$ref": "#/definitions/pgtype.Timestamp"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "profile_picture": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "pgtype.InfinityModifier": {
+            "type": "integer",
+            "format": "int32",
+            "enum": [
+                1,
+                0,
+                -1
+            ],
+            "x-enum-varnames": [
+                "Infinity",
+                "Finite",
+                "NegativeInfinity"
+            ]
+        },
+        "pgtype.Timestamp": {
+            "type": "object",
+            "properties": {
+                "infinityModifier": {
+                    "$ref": "#/definitions/pgtype.InfinityModifier"
+                },
+                "time": {
+                    "description": "Time zone will be ignored when encoding to PostgreSQL.",
+                    "type": "string"
+                },
+                "valid": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}
