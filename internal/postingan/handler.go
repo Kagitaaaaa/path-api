@@ -1,4 +1,4 @@
-package kelas
+package postingan
 
 import (
 	"path-api/internal/db"

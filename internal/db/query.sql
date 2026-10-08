@@ -2,4 +2,4 @@
 select * from pengguna;
 
 -- name: GetPengguna :one
-select * from pengguna where id = $1;
+select id, name from pengguna where id = $1;

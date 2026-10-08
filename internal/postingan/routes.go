@@ -1,9 +1,9 @@
-package kelas
+package postingan
 
 import "github.com/labstack/echo/v5"
 
 func (h *Handler) Register(e *echo.Echo) {
-	kelas := e.Group("/kelas")
+	postingan := e.Group("/postingan")
 
-	kelas.GET("", h.List)
+	postingan.GET("", h.List)
 }

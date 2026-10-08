@@ -6,6 +6,7 @@ import (
 	"path-api/internal/db"
 	"path-api/internal/kelas"
 	"path-api/internal/pengguna"
+	"path-api/internal/postingan"
 	"path-api/internal/utils"
 
 	"github.com/labstack/echo/v5"
@@ -45,6 +46,9 @@ func main() {
 
 	kelasHandler := kelas.New(queries)
 	kelasHandler.Register(e)
+
+	postinganHandler := postingan.New(queries)
+	postinganHandler.Register(e)
 
 	port := utils.GetPort()
 	err = e.Start(port)

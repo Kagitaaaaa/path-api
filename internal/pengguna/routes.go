@@ -1,11 +1,10 @@
 package pengguna
 
-import (
-	"github.com/labstack/echo/v5"
-)
+import "github.com/labstack/echo/v5"
 
-func (h *PenggunaHandler) Register(e *echo.Echo) {
-	e.GET("/pengguna", h.List)
-	e.POST("/pengguna", h.Create)
-	e.GET("/pengguna/:id", h.Get)
+func (h *Handler) Register(e *echo.Echo) {
+	pengguna := e.Group("/pengguna")
+
+	pengguna.GET("", h.List)
+	pengguna.GET("/:id", h.Get)
 }

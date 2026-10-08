@@ -4,10 +4,10 @@ import (
 	"path-api/internal/db"
 )
 
-type PenggunaHandler struct {
+type Handler struct {
 	db *db.Queries
 }
 
-func New(db *db.Queries) *PenggunaHandler {
-	return &PenggunaHandler{db}
+func New(db *db.Queries) *Handler {
+	return &Handler{db}
 }

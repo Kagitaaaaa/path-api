@@ -1,4 +1,4 @@
-package kelas
+package postingan
 
 import (
 	"net/http"
