@@ -36,9 +36,5 @@ func (h *Handler) Login(c *echo.Context) error {
 		return utils.ValidationErrorHandler(c, err)
 	}
 
-	if err != nil {
-		return echo.NewHTTPError(400, err.Error())
-	}
-
 	return echo.NewHTTPError(200, "OK")
 }

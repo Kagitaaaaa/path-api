@@ -6,6 +6,7 @@ services:
             - PORT=3000
             - HOST_PORT=${HOST_PORT}
             - DATABASE_URL=${DOCKER_DATABASE_URL}
+            - SECRET=${SECRET}
         ports:
             - ${HOST_PORT}:3000
         entrypoint: /app/path-api
