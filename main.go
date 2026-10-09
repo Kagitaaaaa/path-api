@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"log"
+	"path-api/internal/auth"
 	"path-api/internal/db"
 	"path-api/internal/kelas"
 	"path-api/internal/pengguna"
 	"path-api/internal/postingan"
 	"path-api/internal/utils"
 
+	echojwt "github.com/labstack/echo-jwt/v5"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
@@ -29,7 +31,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	queries, pool, dbConn, err := db.Connect(ctx)
+	q, pool, dbConn, err := db.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,15 +42,19 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
+	e.Use(echojwt.JWT([]byte(utils.GetSecret())))
 
-	penggunaHandler := pengguna.New(queries)
-	penggunaHandler.Register(e)
+	penggunaHandler := pengguna.New(q)
+	penggunaHandler.Routes(e)
 
-	kelasHandler := kelas.New(queries)
-	kelasHandler.Register(e)
+	kelasHandler := kelas.New(q)
+	kelasHandler.Routes(e)
 
-	postinganHandler := postingan.New(queries)
-	postinganHandler.Register(e)
+	postinganHandler := postingan.New(q)
+	postinganHandler.Routes(e)
+
+	authHandler := auth.New(q)
+	authHandler.Routes(e)
 
 	port := utils.GetPort()
 	err = e.Start(port)

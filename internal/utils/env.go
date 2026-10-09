@@ -55,3 +55,12 @@ func GetPort() string {
 
 	return ":" + port
 }
+
+func GetSecret() string {
+	secret := os.Getenv("SECRET")
+	if secret == "" {
+		log.Fatalln("SECRET belum diset!")
+	}
+
+	return secret
+}
