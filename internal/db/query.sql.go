@@ -9,25 +9,6 @@ import (
 	"context"
 )
 
-const getPengguna = `-- name: GetPengguna :one
-select id, username, email, phone, profile_picture, password, dibuat from pengguna where id = $1
-`
-
-func (q *Queries) GetPengguna(ctx context.Context, id int32) (Pengguna, error) {
-	row := q.db.QueryRow(ctx, getPengguna, id)
-	var i Pengguna
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Email,
-		&i.Phone,
-		&i.ProfilePicture,
-		&i.Password,
-		&i.Dibuat,
-	)
-	return i, err
-}
-
 const listPengguna = `-- name: ListPengguna :many
 select id, username, email, phone, profile_picture, password, dibuat from pengguna
 `

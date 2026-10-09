@@ -117,8 +117,8 @@ type Pengguna struct {
 	ID             int32            `json:"id"`
 	Username       string           `json:"username"`
 	Email          string           `json:"email"`
-	Phone          string           `json:"phone"`
-	ProfilePicture string           `json:"profile_picture"`
+	Phone          pgtype.Text      `json:"phone"`
+	ProfilePicture pgtype.Text      `json:"profile_picture"`
 	Password       string           `json:"password"`
 	Dibuat         pgtype.Timestamp `json:"dibuat"`
 }
