@@ -10,7 +10,6 @@ import (
 	"path-api/internal/postingan"
 	"path-api/internal/utils"
 
-	echojwt "github.com/labstack/echo-jwt/v5"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
@@ -40,9 +39,14 @@ func main() {
 	defer pool.Close()
 
 	e := echo.New()
+
+	e.Validator = utils.NewValidator()
+
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
-	e.Use(echojwt.JWT([]byte(utils.GetSecret())))
+
+	authHandler := auth.New(q)
+	authHandler.Routes(e)
 
 	penggunaHandler := pengguna.New(q)
 	penggunaHandler.Routes(e)
@@ -52,9 +56,6 @@ func main() {
 
 	postinganHandler := postingan.New(q)
 	postinganHandler.Routes(e)
-
-	authHandler := auth.New(q)
-	authHandler.Routes(e)
 
 	port := utils.GetPort()
 	err = e.Start(port)
