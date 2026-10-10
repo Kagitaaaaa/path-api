@@ -10,6 +10,7 @@ import (
 	"path-api/internal/postingan"
 	"path-api/internal/utils"
 
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
@@ -24,11 +25,6 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
-	err := utils.ReadEnv()
-	if err != nil {
-		log.Printf("Failed to read .env: %v", err)
-	}
-
 	ctx := context.Background()
 	q, pool, dbConn, err := db.Connect(ctx)
 	if err != nil {

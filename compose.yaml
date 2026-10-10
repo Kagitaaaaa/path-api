@@ -3,9 +3,8 @@ services:
     api:
         build: .
         environment:
-            - PORT=3000
             - HOST_PORT=${HOST_PORT}
-            - DATABASE_URL=${DOCKER_DATABASE_URL}
+            - DATABASE_URL=host=db user=${DOCKER_POSTGRES_USER} password=${DOCKER_POSTGRES_PASSWORD} dbname=${DOCKER_POSTGRES_DB}
             - SECRET=${SECRET}
         ports:
             - ${HOST_PORT}:3000
@@ -15,9 +14,9 @@ services:
     db:
         image: postgres:18-alpine
         environment:
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_USER=${DOCKER_POSTGRES_USER}
+            - POSTGRES_PASSWORD=${DOCKER_POSTGRES_PASSWORD}
+            - POSTGRES_DB=${DOCKER_POSTGRES_DB}
         restart: unless-stopped
         volumes:
             - db:/var/lib/postgresql/18/docker
