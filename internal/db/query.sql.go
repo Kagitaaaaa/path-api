@@ -9,34 +9,48 @@ import (
 	"context"
 )
 
-const listPengguna = `-- name: ListPengguna :many
-select id, username, email, phone, profile_picture, password, dibuat from pengguna
+const createPengguna = `-- name: CreatePengguna :one
+INSERT INTO pengguna (username, email, password)
+VALUES ($1, $2, $3)
+RETURNING id
 `
 
-func (q *Queries) ListPengguna(ctx context.Context) ([]Pengguna, error) {
-	rows, err := q.db.Query(ctx, listPengguna)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Pengguna
-	for rows.Next() {
-		var i Pengguna
-		if err := rows.Scan(
-			&i.ID,
-			&i.Username,
-			&i.Email,
-			&i.Phone,
-			&i.ProfilePicture,
-			&i.Password,
-			&i.Dibuat,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type CreatePenggunaParams struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (q *Queries) CreatePengguna(ctx context.Context, arg CreatePenggunaParams) (int32, error) {
+	row := q.db.QueryRow(ctx, createPengguna, arg.Username, arg.Email, arg.Password)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
+const getEmailPengguna = `-- name: GetEmailPengguna :one
+SELECT 1 FROM pengguna WHERE email = $1
+`
+
+func (q *Queries) GetEmailPengguna(ctx context.Context, email string) (int32, error) {
+	row := q.db.QueryRow(ctx, getEmailPengguna, email)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const getPengguna = `-- name: GetPengguna :one
+SELECT id, password FROM pengguna WHERE email = $1
+`
+
+type GetPenggunaRow struct {
+	ID       int32  `json:"id"`
+	Password string `json:"password"`
+}
+
+func (q *Queries) GetPengguna(ctx context.Context, email string) (GetPenggunaRow, error) {
+	row := q.db.QueryRow(ctx, getPengguna, email)
+	var i GetPenggunaRow
+	err := row.Scan(&i.ID, &i.Password)
+	return i, err
 }

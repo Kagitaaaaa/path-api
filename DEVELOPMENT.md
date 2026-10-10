@@ -1,7 +1,9 @@
 # Panduan Development PATH API
 
 ## Daftar Isi
+
 - [Prerequisites](#prerequisites)
+- [Setup Awal](#setup-awal)
 - [Membuat query SQL](#membuat-query-sql)
 - [Routing](#routing)
 - [Membuat Implementasi Route](#membuat-implementasi-route)
@@ -9,23 +11,54 @@
 - [Catatan Tambahan](#catatan-tambahan)
 
 ## Prerequisites
+
 1. Go version >= 1.26
 2. Postgres >= 1.18
-3. sqlc 
+3. [sqlc](https://docs.sqlc.dev/en/latest/overview/install.html)
+
 ```bash
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```
-atau kunjungi [instalasi sqlc](https://docs.sqlc.dev/en/latest/overview/install.html).
+
+4. [goose](https://pressly.github.io/goose/installation) (opsional untuk migration)
+
+```bash
+go install github.com/pressly/goose/v3/cmd/goose@latest
+```
+
+## Setup Awal
+
+1. Clone repository dan masuk pada direktori
+
+```bash
+git clone https://github/<user>/path-api.git
+cd path-api
+```
+
+2. Salin `.env.example` ke `.env`
+3. Isikan `.env`
+4. Download dependencies yang dibutuhkan dengan
+
+```bash
+go mod download
+```
+
+5. Jalankan server dengan `go run .`
 
 ## Membuat query SQL
+
 1. Masuk pada file `internal/db/query.sql`
 2. Buat anotasi sebelum query dengan
+
 ```sql
 -- name: NAMA :TIPE
 ```
+
 jenis TIPE ada 3, yakni:
+
 - `:exec` untuk kode yang hanya eksekusi dan tidak menghasilkan apapun. \
-contoh:
+  contoh:
+
 ```sql
 -- name: DeletePengguna :exec
 DELETE FROM pengguna WHERE id = $1;
@@ -35,7 +68,8 @@ UPDATE pengguna SET alamat = 'Kentingan' WHERE id = $1;
 ```
 
 - `:one` untuk kode yang hanya menghasilkan satu row. \
-contoh:
+  contoh:
+
 ```sql
 -- name: GetPengguna :one
 SELECT * FROM pengguna WHERE id = $1;
@@ -45,24 +79,27 @@ UPDATE pengguna SET alamat = 'Kentingan' WHERE id = $1 RETURNING *;
 ```
 
 - `:many` untuk kode yang menghasilkan lebih dari satu row. \
-contoh:
+  contoh:
+
 ```sql
 -- name: ListPengguna :many
 SELECT * FROM pengguna;
 ```
 
-3. Setelah modifikasi `query.sql`. Jalankan 
+3. Setelah modifikasi `query.sql`. Jalankan
+
 ```bash
 sqlc generate
 ```
 
 Selengkapnya dapat cek [dokumentasi sqlc](https://docs.sqlc.dev/en/latest/tutorials/getting-started-postgresql.html)
 
-
 ## Routing
+
 1. Routing pada PATH API terpisah sesuai dengan bidang. Untuk memberikan routing terkait dengan pengguna maka masuk pada file `internal/pengguna/routes.go`
 2. Beri route pada fungsi `Register()`. \
-Contoh:
+   Contoh:
+
 ```go
 func (h *PenggunaHandler) Register(e *echo.Echo) {
   //     path        logic
@@ -72,11 +109,14 @@ func (h *PenggunaHandler) Register(e *echo.Echo) {
   e.DELETE("/pengguna/:id", h.Delete)
 }
 ```
+
 `h.List`, `h.Create`, `h.Get`, `h.Delete` adalah contoh fungsi yang kita buat, cara membuatnya lanjut pada bagian [Membuat Implementasi Route](#membuat-implementasi-route)
 
 ## Membuat Implementasi Route
+
 1. Masih sama pada konteks pengguna, masuk pada `internal/pengguna/logic.go`
 2. Buat fungsi dengan boilerplate seperti ini
+
 ```go
 func (h *PenggunaHandler) List(c *echo.Context) error {
   // ...
@@ -84,25 +124,28 @@ func (h *PenggunaHandler) List(c *echo.Context) error {
 ```
 
 3. Untuk menghasilkan response, gunakan variabel `c *echo.Context`. \
-Contoh:
+   Contoh:
+
 ```go
 func (h *PenggunaHandler) List(c *echo.Context) error {
   // menghasilkan response berbentuk string
   return c.String(http.StatusOK, "Hello, World!")
-  
+
   // atau
-  
+
   // menghasilkan response berbentuk json
   return c.JSON(http.StatusOK, map[string]string{
     "nama": "John Doe",
     "alamat": "Solo",
-  }) 
+  })
 }
 
 ```
 
 ## Mengakses query SQL di `logic.go`
+
 Setelah generate query dari section [Membuat query SQL](#membuat-query-sql). Seperti contoh:
+
 ```sql
 -- name: ListPengguna :many
 SELECT * FROM pengguna;
@@ -117,6 +160,7 @@ sqlc generate
 Kita bisa langsung mengakses fungsi yang digenerate sqlc di `logic.go`dengan variabel `h.db`.
 
 Contoh:
+
 ```go
 func (h *PenggunaHandler) List(c *echo.Context) error {
 	pengguna, err := h.db.ListPengguna(c.Request().Context())
@@ -130,21 +174,27 @@ func (h *PenggunaHandler) List(c *echo.Context) error {
 ```
 
 ## Catatan Tambahan
+
 untuk fungsionalitas Framework Echo yang lain, selengkapnya dapat mengecek dokumentasi [Echo](https://echo.labstack.com/guide/quickstart/)
 
 > [!WARNING]
 > Agar pola response lebih teratur dan terprediksi pada pemanggilan dari frontend. JANGAN MEMBERIKAN RESPONSE BERUPA STRING\
 > \
-> Seperti contoh: 
+> Seperti contoh:
+>
 > ```go
 > return c.String(http.StatusOK, "JANGAN LAKUKAN INI")
 > ```
+>
 > \
 > **SELALU GUNAKAN JSON!**
 > Contoh:
+>
 > ```go
-> return c.JSON(http.StatusOK, "{\"message\": \"OK\"}")
-> 
+> return c.JSON(http.StatusOK, map[string]string{
+>     "message": "OK"
+> })
+>
 > // atau semisal ingin mengembalikan error dapat menggunakan error handling bawaan Echo
 > return echo.NewHTTPError(http.StatusBadRequest, "ini message error")
 > ```

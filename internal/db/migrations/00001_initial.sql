@@ -12,7 +12,7 @@ CREATE TYPE "tipe_post" AS ENUM (
 CREATE TABLE IF NOT EXISTS "pengguna" (
 	"id" SERIAL PRIMARY KEY,
 	"username" TEXT NOT NULL,
-	"email" TEXT NOT NULL,
+	"email" TEXT NOT NULL UNIQUE,
 	"phone" TEXT,
 	"profile_picture" TEXT,
 	"password" TEXT NOT NULL,
