@@ -9,17 +9,17 @@ SELECT 1 FROM pengguna WHERE email = $1;
 -- name: GetPengguna :one
 SELECT id, password FROM pengguna WHERE email = $1;
 
--- name: ListPengguna :many
-SELECT * FROM pengguna;
-
 -- name: GetPenggunaByID :one
 SELECT * FROM pengguna WHERE id = $1 LIMIT 1;
 
 -- name: UpdatePassword :exec
 UPDATE pengguna SET password = $2 WHERE id = $1;
 
--- name: UpdateBiodataPengguna :one
-UPDATE pengguna 
-SET email = $2, phone = $3, profile_picture = $4 
-WHERE id = $1
-RETURNING id, username, email, phone, profile_picture, dibuat;
+-- name: UpdateEmailPengguna :one
+UPDATE pengguna SET email = $2 WHERE id = $1 RETURNING *;
+
+-- name: UpdatePhonePengguna :one
+UPDATE pengguna SET phone = $2 WHERE id = $1 RETURNING *;
+
+-- name: UpdateProfilePicturePengguna :one
+UPDATE pengguna SET profile_picture = $2 WHERE id = $1 RETURNING *;

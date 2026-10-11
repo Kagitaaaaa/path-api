@@ -12,10 +12,16 @@ func New(db *db.Queries) *Handler {
 	return &Handler{db}
 }
 
-type UpdateBiodataRequest struct {
-	Email          string  `json:"email" validate:"required,email"`
-	Phone          *string `json:"phone"`
-	ProfilePicture *string `json:"profile_picture"`
+type UpdateEmailRequest struct {
+	Email string `json:"email" validate:"required,email"`
+}
+
+type UpdatePhoneRequest struct {
+	Phone string `json:"phone" validate:"required"`
+}
+
+type UpdateProfilePictureRequest struct {
+	ProfilePicture string `json:"profile_picture" validate:"required"`
 }
 
 type ResetPasswordRequest struct {

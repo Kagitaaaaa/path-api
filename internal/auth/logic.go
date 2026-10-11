@@ -91,3 +91,9 @@ func (h *Handler) Login(c *echo.Context) error {
 		"token": token,
 	})
 }
+
+func (h *Handler) Logout(c *echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Logout Berhasil",
+	})
+}

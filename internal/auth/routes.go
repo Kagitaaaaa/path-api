@@ -5,4 +5,5 @@ import "github.com/labstack/echo/v5"
 func (h *Handler) Routes(e *echo.Echo) {
 	e.POST("/register", h.Register)
 	e.POST("/login", h.Login)
+	e.POST("/logout", h.Logout)
 }

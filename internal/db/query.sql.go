@@ -76,75 +76,25 @@ func (q *Queries) GetPenggunaByID(ctx context.Context, id int32) (Pengguna, erro
 	return i, err
 }
 
-const listPengguna = `-- name: ListPengguna :many
-SELECT id, username, email, phone, profile_picture, password, dibuat FROM pengguna
+const updateEmailPengguna = `-- name: UpdateEmailPengguna :one
+UPDATE pengguna SET email = $2 WHERE id = $1 RETURNING id, username, email, phone, profile_picture, password, dibuat
 `
 
-func (q *Queries) ListPengguna(ctx context.Context) ([]Pengguna, error) {
-	rows, err := q.db.Query(ctx, listPengguna)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Pengguna
-	for rows.Next() {
-		var i Pengguna
-		if err := rows.Scan(
-			&i.ID,
-			&i.Username,
-			&i.Email,
-			&i.Phone,
-			&i.ProfilePicture,
-			&i.Password,
-			&i.Dibuat,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type UpdateEmailPenggunaParams struct {
+	ID    int32  `json:"id"`
+	Email string `json:"email"`
 }
 
-const updateBiodataPengguna = `-- name: UpdateBiodataPengguna :one
-UPDATE pengguna 
-SET email = $2, phone = $3, profile_picture = $4 
-WHERE id = $1
-RETURNING id, username, email, phone, profile_picture, dibuat
-`
-
-type UpdateBiodataPenggunaParams struct {
-	ID             int32       `json:"id"`
-	Email          string      `json:"email"`
-	Phone          pgtype.Text `json:"phone"`
-	ProfilePicture pgtype.Text `json:"profile_picture"`
-}
-
-type UpdateBiodataPenggunaRow struct {
-	ID             int32            `json:"id"`
-	Username       string           `json:"username"`
-	Email          string           `json:"email"`
-	Phone          pgtype.Text      `json:"phone"`
-	ProfilePicture pgtype.Text      `json:"profile_picture"`
-	Dibuat         pgtype.Timestamp `json:"dibuat"`
-}
-
-func (q *Queries) UpdateBiodataPengguna(ctx context.Context, arg UpdateBiodataPenggunaParams) (UpdateBiodataPenggunaRow, error) {
-	row := q.db.QueryRow(ctx, updateBiodataPengguna,
-		arg.ID,
-		arg.Email,
-		arg.Phone,
-		arg.ProfilePicture,
-	)
-	var i UpdateBiodataPenggunaRow
+func (q *Queries) UpdateEmailPengguna(ctx context.Context, arg UpdateEmailPenggunaParams) (Pengguna, error) {
+	row := q.db.QueryRow(ctx, updateEmailPengguna, arg.ID, arg.Email)
+	var i Pengguna
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
 		&i.Email,
 		&i.Phone,
 		&i.ProfilePicture,
+		&i.Password,
 		&i.Dibuat,
 	)
 	return i, err
@@ -162,4 +112,52 @@ type UpdatePasswordParams struct {
 func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
 	_, err := q.db.Exec(ctx, updatePassword, arg.ID, arg.Password)
 	return err
+}
+
+const updatePhonePengguna = `-- name: UpdatePhonePengguna :one
+UPDATE pengguna SET phone = $2 WHERE id = $1 RETURNING id, username, email, phone, profile_picture, password, dibuat
+`
+
+type UpdatePhonePenggunaParams struct {
+	ID    int32       `json:"id"`
+	Phone pgtype.Text `json:"phone"`
+}
+
+func (q *Queries) UpdatePhonePengguna(ctx context.Context, arg UpdatePhonePenggunaParams) (Pengguna, error) {
+	row := q.db.QueryRow(ctx, updatePhonePengguna, arg.ID, arg.Phone)
+	var i Pengguna
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Phone,
+		&i.ProfilePicture,
+		&i.Password,
+		&i.Dibuat,
+	)
+	return i, err
+}
+
+const updateProfilePicturePengguna = `-- name: UpdateProfilePicturePengguna :one
+UPDATE pengguna SET profile_picture = $2 WHERE id = $1 RETURNING id, username, email, phone, profile_picture, password, dibuat
+`
+
+type UpdateProfilePicturePenggunaParams struct {
+	ID             int32       `json:"id"`
+	ProfilePicture pgtype.Text `json:"profile_picture"`
+}
+
+func (q *Queries) UpdateProfilePicturePengguna(ctx context.Context, arg UpdateProfilePicturePenggunaParams) (Pengguna, error) {
+	row := q.db.QueryRow(ctx, updateProfilePicturePengguna, arg.ID, arg.ProfilePicture)
+	var i Pengguna
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Phone,
+		&i.ProfilePicture,
+		&i.Password,
+		&i.Dibuat,
+	)
+	return i, err
 }
