@@ -11,44 +11,41 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const cekAnggotaKelas = `-- name: CekAnggotaKelas :one
-SELECT EXISTS(
-    SELECT 1 FROM anggota_kelas 
-    WHERE pengguna_id = $1 AND kelas_id = $2
-)
+const checkAnggotaKelas = `-- name: CheckAnggotaKelas :one
+SELECT 1 FROM anggota_kelas
+WHERE pengguna_id = $1 AND kelas_id = $2
 `
 
-type CekAnggotaKelasParams struct {
+type CheckAnggotaKelasParams struct {
 	PenggunaID int32 `json:"pengguna_id"`
 	KelasID    int32 `json:"kelas_id"`
 }
 
-func (q *Queries) CekAnggotaKelas(ctx context.Context, arg CekAnggotaKelasParams) (bool, error) {
-	row := q.db.QueryRow(ctx, cekAnggotaKelas, arg.PenggunaID, arg.KelasID)
-	var exists bool
-	err := row.Scan(&exists)
-	return exists, err
+func (q *Queries) CheckAnggotaKelas(ctx context.Context, arg CheckAnggotaKelasParams) (int32, error) {
+	row := q.db.QueryRow(ctx, checkAnggotaKelas, arg.PenggunaID, arg.KelasID)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const createKelas = `-- name: CreateKelas :exec
-INSERT INTO kelas (nama, tingkat, mata_pelajaran, pembuat, kode_kelas) 
-VALUES (  $1, $2, $3, $4, $5)
+INSERT INTO kelas (nama, tingkat, pembuat, kode_kelas)
+VALUES ($1, $2, $3, $4)
 RETURNING id
 `
 
 type CreateKelasParams struct {
-	Nama          string      `json:"nama"`
-	Tingkat       pgtype.Text `json:"tingkat"`
-	MataPelajaran pgtype.Text `json:"mata_pelajaran"`
-	Pembuat       int32       `json:"pembuat"`
-	KodeKelas     string      `json:"kode_kelas"`
+	Nama      string      `json:"nama"`
+	Tingkat   pgtype.Text `json:"tingkat"`
+	Pembuat   int32       `json:"pembuat"`
+	KodeKelas string      `json:"kode_kelas"`
 }
 
+// -- KELAS ----
 func (q *Queries) CreateKelas(ctx context.Context, arg CreateKelasParams) error {
 	_, err := q.db.Exec(ctx, createKelas,
 		arg.Nama,
 		arg.Tingkat,
-		arg.MataPelajaran,
 		arg.Pembuat,
 		arg.KodeKelas,
 	)
@@ -75,23 +72,74 @@ func (q *Queries) CreatePengguna(ctx context.Context, arg CreatePenggunaParams) 
 	return id, err
 }
 
-const getKelasByKode = `-- name: GetKelasByKode :one
-SELECT id, nama, tingkat, mata_pelajaran, pembuat, kode_kelas, dibuat FROM kelas WHERE kode_kelas = $1
+const createPostingan = `-- name: CreatePostingan :one
+INSERT INTO postingan (judul, deskripsi, lampiran, tipe, pengguna_id, kelas_id, mata_pelajaran)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, judul, deskripsi, lampiran, tipe, mata_pelajaran, pengguna_id, kelas_id, dibuat
 `
 
-func (q *Queries) GetKelasByKode(ctx context.Context, kodeKelas string) (Kela, error) {
-	row := q.db.QueryRow(ctx, getKelasByKode, kodeKelas)
+type CreatePostinganParams struct {
+	Judul         string      `json:"judul"`
+	Deskripsi     pgtype.Text `json:"deskripsi"`
+	Lampiran      []string    `json:"lampiran"`
+	Tipe          TipePost    `json:"tipe"`
+	PenggunaID    int32       `json:"pengguna_id"`
+	KelasID       int32       `json:"kelas_id"`
+	MataPelajaran pgtype.Text `json:"mata_pelajaran"`
+}
+
+func (q *Queries) CreatePostingan(ctx context.Context, arg CreatePostinganParams) (Postingan, error) {
+	row := q.db.QueryRow(ctx, createPostingan,
+		arg.Judul,
+		arg.Deskripsi,
+		arg.Lampiran,
+		arg.Tipe,
+		arg.PenggunaID,
+		arg.KelasID,
+		arg.MataPelajaran,
+	)
+	var i Postingan
+	err := row.Scan(
+		&i.ID,
+		&i.Judul,
+		&i.Deskripsi,
+		&i.Lampiran,
+		&i.Tipe,
+		&i.MataPelajaran,
+		&i.PenggunaID,
+		&i.KelasID,
+		&i.Dibuat,
+	)
+	return i, err
+}
+
+const getKelas = `-- name: GetKelas :one
+SELECT id, nama, tingkat, pembuat, kode_kelas, dibuat FROM kelas WHERE kode_kelas = $1
+`
+
+func (q *Queries) GetKelas(ctx context.Context, kodeKelas string) (Kela, error) {
+	row := q.db.QueryRow(ctx, getKelas, kodeKelas)
 	var i Kela
 	err := row.Scan(
 		&i.ID,
 		&i.Nama,
 		&i.Tingkat,
-		&i.MataPelajaran,
 		&i.Pembuat,
 		&i.KodeKelas,
 		&i.Dibuat,
 	)
 	return i, err
+}
+
+const getKelasIDByKodeKelas = `-- name: GetKelasIDByKodeKelas :one
+SELECT id FROM kelas WHERE kode_kelas = $1
+`
+
+func (q *Queries) GetKelasIDByKodeKelas(ctx context.Context, kodeKelas string) (int32, error) {
+	row := q.db.QueryRow(ctx, getKelasIDByKodeKelas, kodeKelas)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getPasswordPenggunaByEmail = `-- name: GetPasswordPenggunaByEmail :one
@@ -148,7 +196,7 @@ func (q *Queries) GetPengguna(ctx context.Context, id int32) (GetPenggunaRow, er
 }
 
 const joinKelas = `-- name: JoinKelas :exec
-INSERT INTO anggota_kelas (pengguna_id, kelas_id, role) 
+INSERT INTO anggota_kelas (pengguna_id, kelas_id, role)
 VALUES ($1, $2, $3)
 `
 
@@ -164,7 +212,7 @@ func (q *Queries) JoinKelas(ctx context.Context, arg JoinKelasParams) error {
 }
 
 const leaveKelas = `-- name: LeaveKelas :exec
-DELETE FROM anggota_kelas 
+DELETE FROM anggota_kelas
 WHERE kelas_id = $1 AND pengguna_id = $2
 `
 
@@ -178,6 +226,57 @@ func (q *Queries) LeaveKelas(ctx context.Context, arg LeaveKelasParams) error {
 	return err
 }
 
+const listAnggotaKelas = `-- name: ListAnggotaKelas :one
+SELECT id, pengguna_id, kelas_id, role, dibuat FROM anggota_kelas
+WHERE kelas_id = $1
+`
+
+func (q *Queries) ListAnggotaKelas(ctx context.Context, kelasID int32) (AnggotaKela, error) {
+	row := q.db.QueryRow(ctx, listAnggotaKelas, kelasID)
+	var i AnggotaKela
+	err := row.Scan(
+		&i.ID,
+		&i.PenggunaID,
+		&i.KelasID,
+		&i.Role,
+		&i.Dibuat,
+	)
+	return i, err
+}
+
+const listKelas = `-- name: ListKelas :many
+SELECT kelas.id, kelas.nama, kelas.tingkat, kelas.pembuat, kelas.kode_kelas, kelas.dibuat FROM anggota_kelas
+JOIN kelas ON kelas_id = kelas.id
+WHERE pengguna_id = $1
+`
+
+func (q *Queries) ListKelas(ctx context.Context, penggunaID int32) ([]Kela, error) {
+	rows, err := q.db.Query(ctx, listKelas, penggunaID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Kela
+	for rows.Next() {
+		var i Kela
+		if err := rows.Scan(
+			&i.ID,
+			&i.Nama,
+			&i.Tingkat,
+			&i.Pembuat,
+			&i.KodeKelas,
+			&i.Dibuat,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPostingan = `-- name: ListPostingan :many
 SELECT p.id, p.judul, p.deskripsi, p.lampiran, p.tipe, p.pengguna_id, p.kelas_id, p.dibuat
 FROM postingan p
@@ -185,7 +284,7 @@ JOIN kelas k ON p.kelas_id = k.id
 WHERE p.tipe = $1
   AND p.pengguna_id = $2
   AND p.kelas_id = $3
-  AND k.mata_pelajaran = $4
+  AND p.mata_pelajaran = $4
 `
 
 type ListPostinganParams struct {
@@ -195,8 +294,19 @@ type ListPostinganParams struct {
 	MataPelajaran pgtype.Text `json:"mata_pelajaran"`
 }
 
+type ListPostinganRow struct {
+	ID         int32            `json:"id"`
+	Judul      string           `json:"judul"`
+	Deskripsi  pgtype.Text      `json:"deskripsi"`
+	Lampiran   []string         `json:"lampiran"`
+	Tipe       TipePost         `json:"tipe"`
+	PenggunaID int32            `json:"pengguna_id"`
+	KelasID    int32            `json:"kelas_id"`
+	Dibuat     pgtype.Timestamp `json:"dibuat"`
+}
+
 // -- POSTINGAN ----
-func (q *Queries) ListPostingan(ctx context.Context, arg ListPostinganParams) ([]Postingan, error) {
+func (q *Queries) ListPostingan(ctx context.Context, arg ListPostinganParams) ([]ListPostinganRow, error) {
 	rows, err := q.db.Query(ctx, listPostingan,
 		arg.Tipe,
 		arg.PenggunaID,
@@ -207,9 +317,9 @@ func (q *Queries) ListPostingan(ctx context.Context, arg ListPostinganParams) ([
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Postingan
+	var items []ListPostinganRow
 	for rows.Next() {
-		var i Postingan
+		var i ListPostinganRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Judul,
@@ -308,7 +418,7 @@ const updatePostingan = `-- name: UpdatePostingan :one
 UPDATE postingan
 SET judul = $2, deskripsi = $3, lampiran = $4, tipe = $5
 WHERE id = $1
-RETURNING id, judul, deskripsi, lampiran, tipe, pengguna_id, kelas_id, dibuat
+RETURNING id, judul, deskripsi, lampiran, tipe, mata_pelajaran, pengguna_id, kelas_id, dibuat
 `
 
 type UpdatePostinganParams struct {
@@ -334,6 +444,7 @@ func (q *Queries) UpdatePostingan(ctx context.Context, arg UpdatePostinganParams
 		&i.Deskripsi,
 		&i.Lampiran,
 		&i.Tipe,
+		&i.MataPelajaran,
 		&i.PenggunaID,
 		&i.KelasID,
 		&i.Dibuat,
@@ -369,4 +480,20 @@ func (q *Queries) UpdateProfilePicturePengguna(ctx context.Context, arg UpdatePr
 		&i.ProfilePicture,
 	)
 	return i, err
+}
+
+const updateRoleKelas = `-- name: UpdateRoleKelas :exec
+UPDATE anggota_kelas
+SET role = $2
+WHERE id = $1
+`
+
+type UpdateRoleKelasParams struct {
+	ID   int32     `json:"id"`
+	Role RoleKelas `json:"role"`
+}
+
+func (q *Queries) UpdateRoleKelas(ctx context.Context, arg UpdateRoleKelasParams) error {
+	_, err := q.db.Exec(ctx, updateRoleKelas, arg.ID, arg.Role)
+	return err
 }

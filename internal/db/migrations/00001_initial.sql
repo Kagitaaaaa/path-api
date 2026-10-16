@@ -23,9 +23,8 @@ CREATE TABLE IF NOT EXISTS "kelas" (
 	"id" SERIAL PRIMARY KEY,
 	"nama" TEXT NOT NULL,
 	"tingkat" TEXT,
-	"mata_pelajaran" TEXT,
 	"pembuat" INTEGER REFERENCES pengguna (id) NOT NULL,
-	"kode_kelas" VARCHAR(6) NOT NULL,
+	"kode_kelas" VARCHAR(6) NOT NULL UNIQUE,
 	"dibuat" TIMESTAMP NOT NULL DEFAULT now()
 );
 
@@ -43,6 +42,7 @@ CREATE TABLE IF NOT EXISTS "postingan" (
 	"deskripsi" TEXT,
 	"lampiran" TEXT ARRAY,
 	"tipe" TIPE_POST NOT NULL,
+	"mata_pelajaran" TEXT,
 	"pengguna_id" INTEGER REFERENCES pengguna (id) NOT NULL,
 	"kelas_id" INTEGER REFERENCES kelas (id) NOT NULL,
 	"dibuat" TIMESTAMP NOT NULL DEFAULT now()

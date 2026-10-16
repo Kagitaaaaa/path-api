@@ -104,13 +104,12 @@ type AnggotaKela struct {
 }
 
 type Kela struct {
-	ID            int32            `json:"id"`
-	Nama          string           `json:"nama"`
-	Tingkat       pgtype.Text      `json:"tingkat"`
-	MataPelajaran pgtype.Text      `json:"mata_pelajaran"`
-	Pembuat       int32            `json:"pembuat"`
-	KodeKelas     string           `json:"kode_kelas"`
-	Dibuat        pgtype.Timestamp `json:"dibuat"`
+	ID        int32            `json:"id"`
+	Nama      string           `json:"nama"`
+	Tingkat   pgtype.Text      `json:"tingkat"`
+	Pembuat   int32            `json:"pembuat"`
+	KodeKelas string           `json:"kode_kelas"`
+	Dibuat    pgtype.Timestamp `json:"dibuat"`
 }
 
 type Pengguna struct {
@@ -131,12 +130,13 @@ type PengumpulanTuga struct {
 }
 
 type Postingan struct {
-	ID         int32            `json:"id"`
-	Judul      string           `json:"judul"`
-	Deskripsi  pgtype.Text      `json:"deskripsi"`
-	Lampiran   []string         `json:"lampiran"`
-	Tipe       TipePost         `json:"tipe"`
-	PenggunaID int32            `json:"pengguna_id"`
-	KelasID    int32            `json:"kelas_id"`
-	Dibuat     pgtype.Timestamp `json:"dibuat"`
+	ID            int32            `json:"id"`
+	Judul         string           `json:"judul"`
+	Deskripsi     pgtype.Text      `json:"deskripsi"`
+	Lampiran      []string         `json:"lampiran"`
+	Tipe          TipePost         `json:"tipe"`
+	MataPelajaran pgtype.Text      `json:"mata_pelajaran"`
+	PenggunaID    int32            `json:"pengguna_id"`
+	KelasID       int32            `json:"kelas_id"`
+	Dibuat        pgtype.Timestamp `json:"dibuat"`
 }
