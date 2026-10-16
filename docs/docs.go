@@ -19,6 +19,198 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/kelas": {
+            "get": {
+                "description": "List kelas menggunakan Bearer Token dan mengembalikan response list kelas",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kelas"
+                ],
+                "summary": "List Kelas",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/kelas.ListKelasResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Buat Kelas menggunakan nama dan tingkat dan mengembalikan message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kelas"
+                ],
+                "summary": "Buat Kelas",
+                "parameters": [
+                    {
+                        "description": "Create Kelas Request Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/kelas.CreateKelasRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/kelas/{kode_kelas}/gabung": {
+            "post": {
+                "description": "Join Kelas menggunakan kode dan mengembalikan message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kelas"
+                ],
+                "summary": "Join Kelas",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "kode_kelas",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/kelas/{kode_kelas}/keluar": {
+            "post": {
+                "description": "Leave Kelas menggunakan kode dan mengembalikan message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Kelas"
+                ],
+                "summary": "Leave Kelas",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "kode_kelas",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.HTTPResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Login pengguna baru dengan Email dan Password, mengembalikan JWT token untuk Bearer Auth",
@@ -53,13 +245,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginFailure400Response"
+                            "$ref": "#/definitions/utils.HTTPResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginFailure500Response"
+                            "$ref": "#/definitions/utils.HTTPResponse"
                         }
                     }
                 }
@@ -140,13 +332,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/auth.RegisterFailure400Response"
+                            "$ref": "#/definitions/utils.HTTPResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/auth.RegisterFailure500Response"
+                            "$ref": "#/definitions/utils.HTTPResponse"
                         }
                     }
                 }
@@ -154,24 +346,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "auth.LoginFailure400Response": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "username atau password salah"
-                }
-            }
-        },
-        "auth.LoginFailure500Response": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "gagal memproses login"
-                }
-            }
-        },
         "auth.LoginRequest": {
             "type": "object",
             "required": [
@@ -187,24 +361,6 @@ const docTemplate = `{
                     "type": "string",
                     "minLength": 8,
                     "example": "secret123"
-                }
-            }
-        },
-        "auth.RegisterFailure400Response": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "email sudah terdaftarkan"
-                }
-            }
-        },
-        "auth.RegisterFailure500Response": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string",
-                    "example": "gagal memproses register"
                 }
             }
         },
@@ -237,6 +393,49 @@ const docTemplate = `{
                 "token": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+            }
+        },
+        "kelas.CreateKelasRequest": {
+            "type": "object",
+            "required": [
+                "nama"
+            ],
+            "properties": {
+                "nama": {
+                    "type": "string"
+                },
+                "tingkat": {
+                    "type": "string"
+                }
+            }
+        },
+        "kelas.ListKelasResponse": {
+            "type": "object",
+            "properties": {
+                "dibuat": {
+                    "type": "string",
+                    "example": "2006-01-02T15:04:05Z07:00"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "kode_kelas": {
+                    "type": "string",
+                    "example": "A18D23"
+                },
+                "nama": {
+                    "type": "string",
+                    "example": "Pemrograman Dasar"
+                },
+                "pembuat": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "tingkat": {
+                    "type": "string",
+                    "example": "SMA"
                 }
             }
         },
@@ -280,6 +479,14 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "John Doe"
+                }
+            }
+        },
+        "utils.HTTPResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         }

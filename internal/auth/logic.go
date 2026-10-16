@@ -19,8 +19,7 @@ import (
 //	@Produce		json
 //	@Param			request	body		RegisterRequest	true	"Register Request Payload"
 //	@Success		200		{object}	SuccessResponse
-//	@Failure		400		{object}	RegisterFailure400Response
-//	@Failure		500		{object}	RegisterFailure500Response
+//	@Failure		400,500	{object}	utils.HTTPResponse
 //	@Router			/register [post]
 func (h *Handler) Register(c *echo.Context) error {
 	req := new(RegisterRequest)
@@ -77,8 +76,7 @@ func (h *Handler) Register(c *echo.Context) error {
 //	@Produce		json
 //	@Param			request	body		LoginRequest	true	"Login Request Payload"
 //	@Success		200		{object}	SuccessResponse
-//	@Failure		400		{object}	LoginFailure400Response
-//	@Failure		500		{object}	LoginFailure500Response
+//	@Failure		400,500	{object}	utils.HTTPResponse
 //	@Router			/login [post]
 func (h *Handler) Login(c *echo.Context) error {
 	req := new(LoginRequest)

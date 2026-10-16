@@ -1,17 +1,5 @@
 basePath: /
 definitions:
-  auth.LoginFailure400Response:
-    properties:
-      message:
-        example: username atau password salah
-        type: string
-    type: object
-  auth.LoginFailure500Response:
-    properties:
-      message:
-        example: gagal memproses login
-        type: string
-    type: object
   auth.LoginRequest:
     properties:
       email:
@@ -24,18 +12,6 @@ definitions:
     required:
     - email
     - password
-    type: object
-  auth.RegisterFailure400Response:
-    properties:
-      message:
-        example: email sudah terdaftarkan
-        type: string
-    type: object
-  auth.RegisterFailure500Response:
-    properties:
-      message:
-        example: gagal memproses register
-        type: string
     type: object
   auth.RegisterRequest:
     properties:
@@ -58,6 +34,36 @@ definitions:
     properties:
       token:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+    type: object
+  kelas.CreateKelasRequest:
+    properties:
+      nama:
+        type: string
+      tingkat:
+        type: string
+    required:
+    - nama
+    type: object
+  kelas.ListKelasResponse:
+    properties:
+      dibuat:
+        example: 2006-01-02T15:04:05Z07:00
+        type: string
+      id:
+        example: 2
+        type: integer
+      kode_kelas:
+        example: A18D23
+        type: string
+      nama:
+        example: Pemrograman Dasar
+        type: string
+      pembuat:
+        example: 1
+        type: integer
+      tingkat:
+        example: SMA
         type: string
     type: object
   pengguna.GetPenggunaFailure400Response:
@@ -90,6 +96,11 @@ definitions:
         example: John Doe
         type: string
     type: object
+  utils.HTTPResponse:
+    properties:
+      message:
+        type: string
+    type: object
 host: api.patclass.app
 info:
   contact: {}
@@ -100,6 +111,133 @@ info:
   title: PATH API Documentation
   version: "1.0"
 paths:
+  /kelas:
+    get:
+      consumes:
+      - application/json
+      description: List kelas menggunakan Bearer Token dan mengembalikan response
+        list kelas
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/kelas.ListKelasResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+      summary: List Kelas
+      tags:
+      - Kelas
+    post:
+      consumes:
+      - application/json
+      description: Buat Kelas menggunakan nama dan tingkat dan mengembalikan message
+      parameters:
+      - description: Create Kelas Request Payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/kelas.CreateKelasRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+      summary: Buat Kelas
+      tags:
+      - Kelas
+  /kelas/{kode_kelas}/gabung:
+    post:
+      consumes:
+      - application/json
+      description: Join Kelas menggunakan kode dan mengembalikan message
+      parameters:
+      - in: path
+        name: kode_kelas
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+      summary: Join Kelas
+      tags:
+      - Kelas
+  /kelas/{kode_kelas}/keluar:
+    post:
+      consumes:
+      - application/json
+      description: Leave Kelas menggunakan kode dan mengembalikan message
+      parameters:
+      - in: path
+        name: kode_kelas
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.HTTPResponse'
+      summary: Leave Kelas
+      tags:
+      - Kelas
   /login:
     post:
       consumes:
@@ -123,11 +261,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/auth.LoginFailure400Response'
+            $ref: '#/definitions/utils.HTTPResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/auth.LoginFailure500Response'
+            $ref: '#/definitions/utils.HTTPResponse'
       summary: Login pengguna
       tags:
       - Auth
@@ -182,11 +320,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/auth.RegisterFailure400Response'
+            $ref: '#/definitions/utils.HTTPResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/auth.RegisterFailure500Response'
+            $ref: '#/definitions/utils.HTTPResponse'
       summary: Register pengguna baru
       tags:
       - Auth

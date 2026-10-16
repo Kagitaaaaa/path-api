@@ -10,6 +10,16 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
+// List godoc
+//
+//	@Summary		List Kelas
+//	@Description	List kelas menggunakan Bearer Token dan mengembalikan response list kelas
+//	@Tags			Kelas
+//	@Accept			json
+//	@Produce		json
+//	@Success		200			{object}	[]ListKelasResponse
+//	@Failure		400,401,500	{object}	utils.HTTPResponse
+//	@Router			/kelas [get]
 func (h *Handler) List(c *echo.Context) error {
 	claims, err := utils.GetClaims(c)
 	if err != nil {
@@ -25,6 +35,17 @@ func (h *Handler) List(c *echo.Context) error {
 	return c.JSON(http.StatusOK, kelas)
 }
 
+// Create godoc
+//
+//	@Summary		Buat Kelas
+//	@Description	Buat Kelas menggunakan nama dan tingkat dan mengembalikan message
+//	@Tags			Kelas
+//	@Accept			json
+//	@Produce		json
+//	@Param			request		body		CreateKelasRequest	true	"Create Kelas Request Payload"
+//	@Success		200			{object}	utils.HTTPResponse
+//	@Failure		400,401,500	{object}	utils.HTTPResponse
+//	@Router			/kelas [post]
 func (h *Handler) Create(c *echo.Context) error {
 	var req CreateKelasRequest
 
@@ -67,6 +88,17 @@ func (h *Handler) Create(c *echo.Context) error {
 	})
 }
 
+// Join godoc
+//
+//	@Summary		Join Kelas
+//	@Description	Join Kelas menggunakan kode dan mengembalikan message
+//	@Tags			Kelas
+//	@Accept			json
+//	@Produce		json
+//	@Param			request		path		JoinDanKeluarKelasRequest	true	"Create Kelas Request Payload"
+//	@Success		200			{object}	utils.HTTPResponse
+//	@Failure		400,401,500	{object}	utils.HTTPResponse
+//	@Router			/kelas/{kode_kelas}/gabung [post]
 func (h *Handler) Join(c *echo.Context) error {
 	var req JoinDanKeluarKelasRequest
 
@@ -111,6 +143,17 @@ func (h *Handler) Join(c *echo.Context) error {
 	})
 }
 
+// Leave godoc
+//
+//	@Summary		Leave Kelas
+//	@Description	Leave Kelas menggunakan kode dan mengembalikan message
+//	@Tags			Kelas
+//	@Accept			json
+//	@Produce		json
+//	@Param			request		path		JoinDanKeluarKelasRequest	true	"Leave Kelas Request Payload"
+//	@Success		200			{object}	utils.HTTPResponse
+//	@Failure		400,401,500	{object}	utils.HTTPResponse
+//	@Router			/kelas/{kode_kelas}/keluar [post]
 func (h *Handler) Leave(c *echo.Context) error {
 	var req JoinDanKeluarKelasRequest
 	if err := c.Bind(req); err != nil {

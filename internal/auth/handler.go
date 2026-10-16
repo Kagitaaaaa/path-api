@@ -26,19 +26,3 @@ type RegisterRequest struct {
 type SuccessResponse struct {
 	Token string `json:"token" example:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."`
 }
-
-type RegisterFailure400Response struct {
-	Message string `json:"message" example:"email sudah terdaftarkan"`
-}
-
-type RegisterFailure500Response struct {
-	Message string `json:"message" example:"gagal memproses register"`
-}
-
-type LoginFailure400Response struct {
-	Message string `json:"message" example:"username atau password salah"`
-}
-
-type LoginFailure500Response struct {
-	Message string `json:"message" example:"gagal memproses login"`
-}
