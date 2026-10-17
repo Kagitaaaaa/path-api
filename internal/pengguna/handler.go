@@ -1,6 +1,7 @@
 package pengguna
 
 import (
+	"mime/multipart"
 	"path-api/internal/db"
 )
 
@@ -17,11 +18,11 @@ type UpdateEmailRequest struct {
 }
 
 type UpdatePhoneRequest struct {
-	Phone string `json:"phone" validate:"required"`
+	Phone string `json:"phone" validate:"required,e164"`
 }
 
 type UpdateProfilePictureRequest struct {
-	ProfilePicture string `json:"profile_picture" validate:"required"`
+	ProfilePicture *multipart.FileHeader `form:"profile_picture" validate:"required"`
 }
 
 type ResetPasswordRequest struct {

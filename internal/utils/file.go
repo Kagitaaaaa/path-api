@@ -7,8 +7,15 @@ import (
 	"path/filepath"
 )
 
-func WriteFile(file *multipart.FileHeader) (string, error) {
-	dirPath := filepath.Dir("uploads/")
+type TipeUpload string
+
+const (
+	TipeUploadPostingan      TipeUpload = "uploads/postingan/"
+	TipeUploadProfilePicture TipeUpload = "uploads/pfp/"
+)
+
+func WriteFile(tipeUpload TipeUpload, file *multipart.FileHeader) (string, error) {
+	dirPath := filepath.Dir(string(tipeUpload))
 	err := os.MkdirAll(dirPath, 0755)
 	if err != nil {
 		return "", err

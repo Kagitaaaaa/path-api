@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS "postingan" (
 CREATE TABLE IF NOT EXISTS "pengumpulan_tugas" (
 	"id" SERIAL PRIMARY KEY,
 	"postingan_id" INTEGER REFERENCES postingan (id) NOT NULL,
+	"pengguna_id" INTEGER REFERENCES pengguna (id) NOT NULL,
 	"lampiran" TEXT ARRAY,
 	"dibuat" TIMESTAMP NOT NULL DEFAULT now()
 );

@@ -125,6 +125,7 @@ type Pengguna struct {
 type PengumpulanTuga struct {
 	ID          int32            `json:"id"`
 	PostinganID int32            `json:"postingan_id"`
+	PenggunaID  int32            `json:"pengguna_id"`
 	Lampiran    []string         `json:"lampiran"`
 	Dibuat      pgtype.Timestamp `json:"dibuat"`
 }

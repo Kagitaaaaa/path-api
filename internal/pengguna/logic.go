@@ -111,17 +111,21 @@ func (h *Handler) UpdateProfilePicture(c *echo.Context) error {
 
 	req := new(UpdateProfilePictureRequest)
 	if err := c.Bind(req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "request tidak sesuai")
 	}
 	if err := c.Validate(req); err != nil {
 		return utils.ValidationErrorHandler(c, err)
 	}
 
-	ppPg := pgtype.Text{String: req.ProfilePicture, Valid: true}
+	filePath, err := utils.WriteFile(utils.TipeUploadProfilePicture, req.ProfilePicture)
+	if err != nil {
+		log.Println(err)
+		return echo.NewHTTPError(http.StatusBadRequest, "gagal mengupload file")
+	}
 
 	updatedUser, err := h.db.UpdateProfilePicturePengguna(c.Request().Context(), db.UpdateProfilePicturePenggunaParams{
 		ID:             int32(claims.UserID),
-		ProfilePicture: ppPg,
+		ProfilePicture: pgtype.Text{String: filePath, Valid: true},
 	})
 	if err != nil {
 		log.Println(err)

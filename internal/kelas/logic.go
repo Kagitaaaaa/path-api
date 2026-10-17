@@ -47,14 +47,15 @@ func (h *Handler) List(c *echo.Context) error {
 //	@Failure		400,401,500	{object}	utils.HTTPResponse
 //	@Router			/kelas [post]
 func (h *Handler) Create(c *echo.Context) error {
-	var req CreateKelasRequest
+	req := CreateKelasRequest{}
 
-	err := c.Bind(req)
+	err := c.Bind(&req)
 	if err != nil {
+		log.Println(err)
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	err = c.Validate(req)
+	err = c.Validate(&req)
 	if err != nil {
 		return utils.ValidationErrorHandler(c, err)
 	}
@@ -66,7 +67,8 @@ func (h *Handler) Create(c *echo.Context) error {
 
 	var tingkatParam pgtype.Text
 	if req.Tingkat != "" {
-		tingkatParam = pgtype.Text{String: req.Tingkat, Valid: true}
+		tingkatParam.Valid = true
+		tingkatParam.String = req.Tingkat
 	}
 
 	kodeKelas := utils.GenerateHashCode()
@@ -102,11 +104,11 @@ func (h *Handler) Create(c *echo.Context) error {
 func (h *Handler) Join(c *echo.Context) error {
 	var req JoinDanKeluarKelasRequest
 
-	if err := c.Bind(req); err != nil {
+	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	if err := c.Validate(req); err != nil {
+	if err := c.Validate(&req); err != nil {
 		return utils.ValidationErrorHandler(c, err)
 	}
 
@@ -156,11 +158,11 @@ func (h *Handler) Join(c *echo.Context) error {
 //	@Router			/kelas/{kode_kelas}/keluar [post]
 func (h *Handler) Leave(c *echo.Context) error {
 	var req JoinDanKeluarKelasRequest
-	if err := c.Bind(req); err != nil {
+	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	if err := c.Validate(req); err != nil {
+	if err := c.Validate(&req); err != nil {
 		return utils.ValidationErrorHandler(c, err)
 	}
 
